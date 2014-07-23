@@ -1,4 +1,4 @@
-// Simplified GLFW example
+// Simplified harfbuzz example
 // Ebrahim Byagowi <ebrahim@gnu.org>
 #include <stdio.h>
 
