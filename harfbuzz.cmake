@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.0)
-// Based on https://github.com/pkoshevoy/harfbuzz/blob/a4a8abe1d6faa7671f0a0bcebe86e88c4cc624db/msvcport/CMakeLists.txt
+# Based on https://github.com/pkoshevoy/harfbuzz/blob/a4a8abe1d6faa7671f0a0bcebe86e88c4cc624db/msvcport/CMakeLists.txt
 
 project(harfbuzz)
 
