@@ -9,7 +9,6 @@
 #define HAVE_UNISCRIBE
 #include <hb.h>
 #include <hb-ft.h>
-#include <hb-uniscribe.h>
 
 // Simple pixel copy code brought from http://www.freetype.org/freetype2/docs/tutorial/example1.c
 void draw_bitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y, unsigned char* image, int width, int height)
