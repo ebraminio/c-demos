@@ -6,7 +6,6 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-#define HAVE_UNISCRIBE
 #include <hb.h>
 #include <hb-ft.h>
 
