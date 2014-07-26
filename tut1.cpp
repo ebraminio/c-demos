@@ -10,8 +10,7 @@
 #include <hb-ft.h>
 
 // Simple pixel copy code brought from http://www.freetype.org/freetype2/docs/tutorial/example1.c
-void draw_bitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y, unsigned char* image, int width, int height)
-{
+void drawBitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y, unsigned char* image, int width, int height) {
 	FT_Int i, j, p, q;
 	FT_Int x_max = x + bitmap->width;
 	FT_Int y_max = y + bitmap->rows;
@@ -66,16 +65,15 @@ int main() {
 	hb_glyph_position_t *glyphPositions = hb_buffer_get_glyph_positions(buf, &glyphCount);
 
 	// this is not a good assumption specially when there is GPOS on the font
-	int height = (face->max_advance_height - face->descender) / 64 + 5;
+	int height = (face->max_advance_height - face->descender) / 64 + 1;
 	int width = 120; // for now
-	unsigned char* image = (unsigned char*)malloc(sizeof(char) * width * height);
-	memset(image, 0, width * height);
+	unsigned char* image = (unsigned char*)calloc(width * height, sizeof(char));
 	FT_GlyphSlot slot = face->glyph;
-	int x = 0, y = face->max_advance_height / 64 + 2;
+	int x = 0, y = face->max_advance_height / 64 - 2;
 	for (int i = 0; i < glyphCount; ++i) {
 		FT_Load_Glyph(face, glyphInfos[i].codepoint, FT_LOAD_RENDER);
 
-		draw_bitmap(&slot->bitmap,
+		drawBitmap(&slot->bitmap,
 			x + (glyphPositions[i].x_offset / 64) + slot->bitmap_left,
 			y - (glyphPositions[i].y_offset / 64) - slot->bitmap_top,
 			image, width, height);
