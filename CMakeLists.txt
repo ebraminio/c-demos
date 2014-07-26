@@ -14,8 +14,9 @@ add_subdirectory(freetype2)
 include_directories(freetype2/include)
 
 ## harfbuzz
+set(HB_INSTALL OFF CACHE STRING "" FORCE)
 include(harfbuzz.cmake)
-include_directories(harfbuzz/src harfbuzz/src/hb-ucdn)
+include_directories(harfbuzz/src)
 
 # Ours
 ## tut0

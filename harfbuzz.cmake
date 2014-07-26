@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 2.8.0)
-# Based on https://github.com/pkoshevoy/harfbuzz/blob/a4a8abe1d6faa7671f0a0bcebe86e88c4cc624db/msvcport/CMakeLists.txt
-
 project(harfbuzz)
+#! Based on https://github.com/pkoshevoy/harfbuzz/blob/a4a8abe1d6faa7671f0a0bcebe86e88c4cc624db/msvcport/CMakeLists.txt
+
+## HarfBuzz build configurations
+option(HB_INSTALL "Generate installation target" ON)
 
 set(USE_BUILTIN_UCDN true CACHE PATH "Use HarfBuzz provided UCDN")
+
 set(FREETYPE_DIR "$ENV{FREETYPE_DIR}"
   CACHE PATH "root path for freetype lib/ and include/ folders"
   )
@@ -25,7 +28,21 @@ if (FREETYPE_INCLUDE_DIR AND FREETYPE_LIBRARY)
   add_definitions(-DHAVE_FREETYPE=1 -DHAVE_FT_FACE_GETCHARVARIANTINDEX=1)
 endif (FREETYPE_INCLUDE_DIR AND FREETYPE_LIBRARY)
 
+include_directories(AFTER
+  ${PROJECT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/.
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/../src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../include
+  )
 
+add_definitions(-DHAVE_OT)
+add_definitions(-DHAVE_ATEXIT)
+add_definitions(-DHB_NO_MT)
+add_definitions(-DHB_DISABLE_DEPRECATED)
+##
+
+## execute ragel tasks
 find_program(RAGEL "ragel")
 
 if (RAGEL)
@@ -39,31 +56,23 @@ function (ragel_preproc src_dir src_sans_rl out_sfx)
     COMMAND ${RAGEL} -G2 -o ${CMAKE_CURRENT_BINARY_DIR}/${src_sans_rl}${out_sfx} ${CMAKE_CURRENT_SOURCE_DIR}/${src_dir}/${src_sans_rl}.rl -I ${CMAKE_CURRENT_SOURCE_DIR} ${ARGN}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${src_dir}/${src_sans_rl}.rl
     )
-  add_custom_target(ragel_${src_sans_rl} DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${src_sans_rl})
+  add_custom_target(harfbuzz_${src_sans_rl} DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${src_sans_rl})
 endfunction(ragel_preproc)
-
-
-include_directories(AFTER
-  ${PROJECT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/.
-  ${CMAKE_CURRENT_SOURCE_DIR}/..
-  ${CMAKE_CURRENT_SOURCE_DIR}/../src
-  ${CMAKE_CURRENT_SOURCE_DIR}/../include
-  )
 
 ragel_preproc(harfbuzz/src hb-buffer-deserialize-json .hh)
 ragel_preproc(harfbuzz/src hb-buffer-deserialize-text .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-indic-machine .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-myanmar-machine .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-sea-machine .hh)
+##
 
+## Make hb-version.h
 file(READ harfbuzz/configure.ac CONFIGUREAC)
 string(REGEX MATCH "\\[(([0-9]+)\\.([0-9]+)\\.([0-9]+))\\]" HB_VERSION_MATCH ${CONFIGUREAC})
 set (HB_VERSION ${CMAKE_MATCH_1})
 set (HB_VERSION_MAJOR ${CMAKE_MATCH_2})
 set (HB_VERSION_MINOR ${CMAKE_MATCH_3})
 set (HB_VERSION_MICRO ${CMAKE_MATCH_4})
-
 
 set(HB_VERSION_H_IN "${PROJECT_SOURCE_DIR}/harfbuzz/src/hb-version.h.in")
 set(HB_VERSION_H "${PROJECT_BINARY_DIR}/harfbuzz/hb-version.h")
@@ -73,8 +82,10 @@ execute_process(COMMAND "${CMAKE_COMMAND}" -E copy_if_different
   "${HB_VERSION_H}.tmp"
   "${HB_VERSION_H}")
 file(REMOVE "${HB_VERSION_H}.tmp")
+include_directories("${PROJECT_BINARY_DIR}/harfbuzz/")
+##
 
-
+## Define source and headers of projects
 set(project_sources
   ${project_sources}
 
@@ -183,7 +194,7 @@ set(project_sources
   )
 
 if (USE_BUILTIN_UCDN)
-  include_directories(src/hb-ucdn)
+  include_directories(harfbuzz/src/hb-ucdn)
   add_definitions(-DHAVE_UCDN)
   
   set(project_headers
@@ -196,9 +207,9 @@ if (USE_BUILTIN_UCDN)
     harfbuzz/src/hb-ucdn/ucdn.c
     harfbuzz/src/hb-ucdn/ucdn.h
     harfbuzz/src/hb-ucdn/unicodedata_db.h)
-else (USE_BUILTIN_UCDN)
+else ()
   add_definitions(-DHB_NO_UNICODE_FUNCS)
-endif (USE_BUILTIN_UCDN)
+endif ()
 
 set(THIRD_PARTY_LIBS )
 
@@ -228,18 +239,16 @@ if (WIN32)
   
   set(THIRD_PARTY_LIBS usp10 gdi32 rpcrt4)
 endif (WIN32)
+##
 
 add_library(harfbuzz STATIC ${project_sources})
 target_link_libraries(harfbuzz ${THIRD_PARTY_LIBS})
 
-install(TARGETS harfbuzz DESTINATION lib)
-install(FILES
-  ${project_headers}
+if (HB_INSTALL)
+  install(TARGETS harfbuzz DESTINATION lib)
+  install(FILES
+    ${project_headers}
 
-  DESTINATION
-  include/harfbuzz)
-
-add_definitions(-DHAVE_OT)
-add_definitions(-DHAVE_ATEXIT)
-add_definitions(-DHB_NO_MT)
-add_definitions(-DHB_DISABLE_DEPRECATED)
+    DESTINATION
+    include/harfbuzz)
+endif()
