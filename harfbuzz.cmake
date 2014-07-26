@@ -57,13 +57,16 @@ ragel_preproc(harfbuzz/src hb-ot-shape-complex-indic-machine .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-myanmar-machine .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-sea-machine .hh)
 
-set (HB_VERSION_MAJOR 0)
-set (HB_VERSION_MINOR 9)
-set (HB_VERSION_MICRO 32)
-set (HB_VERSION "0.9.32")
+file(READ harfbuzz/configure.ac CONFIGUREAC)
+string(REGEX MATCH "\\[(([0-9]+)\\.([0-9]+)\\.([0-9]+))\\]" HB_VERSION_MATCH ${CONFIGUREAC})
+set (HB_VERSION ${CMAKE_MATCH_1})
+set (HB_VERSION_MAJOR ${CMAKE_MATCH_2})
+set (HB_VERSION_MINOR ${CMAKE_MATCH_3})
+set (HB_VERSION_MICRO ${CMAKE_MATCH_4})
 
-set (HB_VERSION_H_IN "${PROJECT_SOURCE_DIR}/../src/hb-version.h.in")
-set (HB_VERSION_H "${PROJECT_BINARY_DIR}/hb-version.h")
+
+set(HB_VERSION_H_IN "${PROJECT_SOURCE_DIR}/harfbuzz/src/hb-version.h.in")
+set(HB_VERSION_H "${PROJECT_BINARY_DIR}/harfbuzz/hb-version.h")
 set_source_files_properties("${HB_VERSION_H}" PROPERTIES GENERATED true)
 configure_file("${HB_VERSION_H_IN}" "${HB_VERSION_H}.tmp" @ONLY)
 execute_process(COMMAND "${CMAKE_COMMAND}" -E copy_if_different
