@@ -1,4 +1,5 @@
-// Simplified harfbuzz example
+// Simple harfbuzz, it is not best practice nor right way to do text rendering using harfbuzz/ft
+// there are more superior sample on the net, you should look at for a real example 
 // Ebrahim Byagowi <ebrahim@gnu.org>
 #include <stdio.h>
 
@@ -15,10 +16,8 @@ void drawBitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y, unsigned char* image, int
 	FT_Int x_max = x + bitmap->width;
 	FT_Int y_max = y + bitmap->rows;
 
-	for (i = x, p = 0; i < x_max; i++, p++)
-	{
-		for (j = y, q = 0; j < y_max; j++, q++)
-		{
+	for (i = x, p = 0; i < x_max; i++, p++) {
+		for (j = y, q = 0; j < y_max; j++, q++) {
 			if (i < 0 || j < 0 ||
 				i >= width || j >= height)
 				continue;
@@ -50,14 +49,14 @@ int main() {
 	FT_Set_Char_Size(face, 0, 50 * 64, 72, 72);
 
 	// Configure harfbuzz buffer and shape
-	hb_font_t *hbFont = hb_ft_font_create(face, NULL);
+	hb_font_t *font = hb_ft_font_create(face, NULL);
 	hb_buffer_t *buf = hb_buffer_create();
 	hb_buffer_set_direction(buf, HB_DIRECTION_RTL);
 	hb_buffer_set_script(buf, HB_SCRIPT_ARABIC); // see hb-unicode.h
-	// hb_buffer_set_language(buf, hb_language_from_string("ar", 2)); // optional but needed for advanced font features
+	// hb_buffer_set_language(buf, hb_language_from_string("ar", 2)); // for language specific font features
 	const char *text = "مَتن"; // Sample Arabic text
 	hb_buffer_add_utf8(buf, text, strlen(text), 0, strlen(text));
-	hb_shape(hbFont, buf, NULL, 0); // Shaping magic happens here
+	hb_shape(font, buf, NULL, 0); // Shaping magic happens here
 
 	// Drawing
 	unsigned int glyphCount;
@@ -66,12 +65,16 @@ int main() {
 
 	// this is not a good assumption specially when there is GPOS on the font
 	int height = (face->max_advance_height - face->descender) / 64 + 1;
-	int width = 120; // for now
+	int width = 0;
+	// doing width measuring just based shaper glyphs advances is not good assumption either
+	for (int i = 0; i < glyphCount; ++i) { width += glyphPositions[i].x_advance; }
+	width /= 64;
 	unsigned char* image = (unsigned char*)calloc(width * height, sizeof(char));
 	FT_GlyphSlot slot = face->glyph;
 	int x = 0, y = face->max_advance_height / 64 - 2;
 	for (int i = 0; i < glyphCount; ++i) {
-		FT_Load_Glyph(face, glyphInfos[i].codepoint, FT_LOAD_RENDER);
+		FT_Load_Glyph(face, glyphInfos[i].codepoint, FT_LOAD_DEFAULT);
+		FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL);
 
 		drawBitmap(&slot->bitmap,
 			x + (glyphPositions[i].x_offset / 64) + slot->bitmap_left,
