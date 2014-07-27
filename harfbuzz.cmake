@@ -1,32 +1,11 @@
 cmake_minimum_required(VERSION 2.8.0)
 project(harfbuzz)
-#! Based on https://github.com/pkoshevoy/harfbuzz/blob/a4a8abe1d6faa7671f0a0bcebe86e88c4cc624db/msvcport/CMakeLists.txt
 
 ## HarfBuzz build configurations
 option(HB_INSTALL "Generate installation target" ON)
-option(HAVE_UNISCRIBE "Uniscribe shaper" OFF)
-option(USE_BUILTIN_UCDN "Use HarfBuzz provided UCDN" ON)
-
-set(FREETYPE_DIR "$ENV{FREETYPE_DIR}"
-  CACHE PATH "root path for freetype lib/ and include/ folders"
-  )
-find_path(FREETYPE_INCLUDE_DIR
-  ft2build.h freetype2/freetype/freetype.h
-  PATHS ${FREETYPE_DIR}/include
-  )
-find_library(FREETYPE_LIBRARY
-  freetype libfreetype
-  PATHS ${FREETYPE_DIR}/lib
-  DOC "freetype library"
-  )
-if (FREETYPE_INCLUDE_DIR)
-  include_directories(AFTER ${FREETYPE_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR}/freetype2)
-endif (FREETYPE_INCLUDE_DIR)
-
-if (FREETYPE_INCLUDE_DIR AND FREETYPE_LIBRARY)
-  set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} ${FREETYPE_LIBRARY})
-  add_definitions(-DHAVE_FREETYPE=1 -DHAVE_FT_FACE_GETCHARVARIANTINDEX=1)
-endif (FREETYPE_INCLUDE_DIR AND FREETYPE_LIBRARY)
+option(HB_HAVE_FREETYPE "Use uniscribe" OFF)
+option(HB_HAVE_UNISCRIBE "Uniscribe shaper" OFF)
+option(HB_BUILTIN_UCDN "Use HarfBuzz provided UCDN" ON)
 
 include_directories(AFTER
   ${PROJECT_BINARY_DIR}
@@ -98,6 +77,7 @@ set(project_sources
 
 set(project_headers
   ${HB_VERSION_H}
+
   harfbuzz/src/hb.h
   harfbuzz/src/hb-blob.h
   harfbuzz/src/hb-buffer.h
@@ -105,14 +85,14 @@ set(project_headers
   harfbuzz/src/hb-deprecated.h
   harfbuzz/src/hb-face.h
   harfbuzz/src/hb-font.h
-  harfbuzz/src/hb-ft.h
   harfbuzz/src/hb-ot.h
   harfbuzz/src/hb-ot-layout.h
   harfbuzz/src/hb-ot-tag.h
   harfbuzz/src/hb-set.h
   harfbuzz/src/hb-shape.h
   harfbuzz/src/hb-shape-plan.h
-  harfbuzz/src/hb-unicode.h)
+  harfbuzz/src/hb-unicode.h
+  )
 
 set(project_sources
   ${project_sources}
@@ -123,7 +103,6 @@ set(project_sources
   harfbuzz/src/hb-common.cc
   harfbuzz/src/hb-face.cc
   harfbuzz/src/hb-font.cc
-  harfbuzz/src/hb-ft.cc
   harfbuzz/src/hb-ot-tag.cc
   harfbuzz/src/hb-set.cc
   harfbuzz/src/hb-shape.cc
@@ -189,38 +168,58 @@ set(project_sources
   harfbuzz/src/hb-ot-shape-private.hh
 
   harfbuzz/src/hb-ot-shape.h
-
-  ${project_headers}
   )
 
-if (USE_BUILTIN_UCDN)
+if (HB_HAVE_FREETYPE)
+  set(FREETYPE_DIR "$ENV{FREETYPE_DIR}"
+    CACHE PATH "root path for freetype lib/ and include/ folders"
+    )
+  find_path(FREETYPE_INCLUDE_DIR
+    ft2build.h freetype2/freetype/freetype.h
+    PATHS ${FREETYPE_DIR}/include
+    )
+  find_library(FREETYPE_LIBRARY
+    freetype libfreetype
+    PATHS ${FREETYPE_DIR}/lib
+    DOC "freetype library"
+    )
+  if (FREETYPE_INCLUDE_DIR)
+    include_directories(AFTER ${FREETYPE_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR}/freetype2)
+  endif ()
+
+  if (FREETYPE_INCLUDE_DIR AND FREETYPE_LIBRARY)
+    set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} ${FREETYPE_LIBRARY})
+    add_definitions(-DHAVE_FREETYPE=1 -DHAVE_FT_FACE_GETCHARVARIANTINDEX=1)
+  endif ()
+
+  set(project_headers ${project_headers} harfbuzz/src/hb-ft.h)
+
+  set(project_sources ${project_sources} harfbuzz/src/hb-ft.cc)
+endif ()
+
+if (HB_BUILTIN_UCDN)
   include_directories(harfbuzz/src/hb-ucdn)
   add_definitions(-DHAVE_UCDN)
   
-  set(project_headers
-    ${project_headers}
-	harfbuzz/src/hb-ucdn/ucdn.h)
-	
+  set(project_headers ${project_headers} harfbuzz/src/hb-ucdn/ucdn.h)
+
   set(project_sources
     ${project_sources}
-	harfbuzz/src/hb-ucdn.cc
+
+    harfbuzz/src/hb-ucdn.cc
     harfbuzz/src/hb-ucdn/ucdn.c
-    harfbuzz/src/hb-ucdn/ucdn.h
     harfbuzz/src/hb-ucdn/unicodedata_db.h)
 else ()
   add_definitions(-DHB_NO_UNICODE_FUNCS)
 endif ()
 
-set(THIRD_PARTY_LIBS )
-
-if (APPLE)
+if (APPLE AND HB_HAVE_CORETEXT)
   # Apple Advanced Typography
   add_definitions(-DHAVE_CORETEXT)
 
   set(project_sources
     ${project_sources}
-    harfbuzz/src/hb-coretext.cc
-    harfbuzz/src/hb-coretext.h)
+    harfbuzz/src/hb-coretext.cc)
 
   find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
   mark_as_advanced(APPLICATION_SERVICES_FRAMEWORK)
@@ -229,16 +228,17 @@ if (APPLE)
   endif (APPLICATION_SERVICES_FRAMEWORK)
 endif (APPLE)
 
-if (WIN32 AND HAVE_UNISCRIBE)
-  add_definitions(-DHAVE_UNISCRIBE)	
-  
-  set(project_sources
-    ${project_sources}
-	harfbuzz/src/hb-uniscribe.cc
-	harfbuzz/src/hb-uniscribe.h)
-  
-  set(THIRD_PARTY_LIBS usp10 gdi32 rpcrt4)
+if (WIN32 AND HB_HAVE_UNISCRIBE)
+  add_definitions(-DHAVE_UNISCRIBE)
+
+  set(project_headers ${project_headers} harfbuzz/src/hb-uniscribe.h)
+
+  set(project_sources ${project_sources} harfbuzz/src/hb-uniscribe.cc)
+
+  set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} usp10 gdi32 rpcrt4)
 endif ()
+
+set(project_sources ${project_sources} ${project_headers})
 ##
 
 add_library(harfbuzz STATIC ${project_sources})
