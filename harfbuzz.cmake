@@ -3,7 +3,7 @@ project(harfbuzz)
 
 ## HarfBuzz build configurations
 option(HB_INSTALL "Generate installation target" ON)
-option(HB_HAVE_FREETYPE "Use uniscribe" OFF)
+option(HB_HAVE_FREETYPE "Use FreeType" OFF)
 option(HB_HAVE_UNISCRIBE "Uniscribe shaper" OFF)
 option(HB_HAVE_CORETEXT "Enable CoreText shaper on Mac" ON)
 option(HB_BUILTIN_UCDN "Use HarfBuzz provided UCDN" ON)
