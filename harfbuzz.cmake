@@ -4,6 +4,7 @@ project(harfbuzz)
 
 ## HarfBuzz build configurations
 option(HB_INSTALL "Generate installation target" ON)
+option(HAVE_UNISCRIBE "Uniscribe shaper" OFF)
 
 set(USE_BUILTIN_UCDN true CACHE PATH "Use HarfBuzz provided UCDN")
 
@@ -229,7 +230,7 @@ if (APPLE)
   endif (APPLICATION_SERVICES_FRAMEWORK)
 endif (APPLE)
 
-if (WIN32)
+if (WIN32 AND HAVE_UNISCRIBE)
   add_definitions(-DHAVE_UNISCRIBE)	
   
   set(project_sources
@@ -238,7 +239,7 @@ if (WIN32)
 	harfbuzz/src/hb-uniscribe.h)
   
   set(THIRD_PARTY_LIBS usp10 gdi32 rpcrt4)
-endif (WIN32)
+endif ()
 ##
 
 add_library(harfbuzz STATIC ${project_sources})
