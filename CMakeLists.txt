@@ -20,9 +20,9 @@ include_directories(harfbuzz/src)
 
 # Ours
 ## tut0
-add_executable(tut0 tut0.cpp)
+add_executable(tut0 tut0.c)
 target_link_libraries(tut0 glfw ${GLFW_LIBRARIES})
 
 ## tut1
-add_executable(tut1 tut1.cpp)
+add_executable(tut1 tut1.c)
 target_link_libraries(tut1 harfbuzz freetype)
