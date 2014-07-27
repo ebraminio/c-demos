@@ -5,8 +5,7 @@ project(harfbuzz)
 ## HarfBuzz build configurations
 option(HB_INSTALL "Generate installation target" ON)
 option(HAVE_UNISCRIBE "Uniscribe shaper" OFF)
-
-set(USE_BUILTIN_UCDN true CACHE PATH "Use HarfBuzz provided UCDN")
+option(USE_BUILTIN_UCDN "Use HarfBuzz provided UCDN" ON)
 
 set(FREETYPE_DIR "$ENV{FREETYPE_DIR}"
   CACHE PATH "root path for freetype lib/ and include/ folders"
