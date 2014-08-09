@@ -19,6 +19,12 @@ set(HB_HAVE_FREETYPE ON CACHE STRING "" FORCE)
 include(harfbuzz.cmake)
 include_directories(harfbuzz/src)
 
+## glew
+add_definitions(-DGLEW_STATIC)
+option(glew-cmake_BUILD_SHARED "" OFF)
+add_subdirectory(glew)
+include_directories(glew/include glew/src)
+
 # Ours
 ## tut0
 add_executable(tut0 tut0.c)
@@ -27,3 +33,7 @@ target_link_libraries(tut0 glfw ${GLFW_LIBRARIES})
 ## tut1
 add_executable(tut1 tut1.c)
 target_link_libraries(tut1 harfbuzz freetype)
+
+## tut2
+add_executable(tut2 tut2.c)
+target_link_libraries(tut2 glfw ${GLFW_LIBRARIES} libglew_static)
