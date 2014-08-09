@@ -1,4 +1,4 @@
-Simple cross platform C++ graphic and OpenGL example
+Simple cross platform graphic and OpenGL examples
 
 Intended to be usable specially on Windows with Visual Studio, where I need it to use for educating OpenGL and graphic.
 
