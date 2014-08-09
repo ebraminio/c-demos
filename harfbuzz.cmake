@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.0)
-project(harfbuzz)
+#project(harfbuzz)
 
 ## HarfBuzz build configurations
 option(HB_INSTALL "Generate installation target" ON)
