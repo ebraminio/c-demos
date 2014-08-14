@@ -46,7 +46,7 @@ int main() {
 		0,
 		&face);
 
-	FT_Set_Char_Size(face, 0, 50 * 64, 72, 72);
+	FT_Set_Char_Size(face, 0, 100 * 64, 72, 72);
 
 	// Configure harfbuzz buffer and shape
 	hb_font_t *font = hb_ft_font_create(face, NULL);
@@ -54,7 +54,7 @@ int main() {
 	hb_buffer_set_direction(buf, HB_DIRECTION_RTL);
 	hb_buffer_set_script(buf, HB_SCRIPT_ARABIC); // see hb-unicode.h
 	// hb_buffer_set_language(buf, hb_language_from_string("ar", 2)); // for language specific font features
-	const char *text = "مَتن"; // Sample Arabic text
+	const char *text = "فرآیند"; // Sample Arabic text
 	hb_buffer_add_utf8(buf, text, strlen(text), 0, strlen(text));
 	hb_shape(font, buf, NULL, 0); // Shaping magic happens here
 
@@ -64,14 +64,14 @@ int main() {
 	hb_glyph_position_t *glyphPositions = hb_buffer_get_glyph_positions(buf, &glyphCount);
 
 	// this is not a good assumption specially when there is GPOS on the font
-	int height = (face->max_advance_height - face->descender) / 64 + 1;
+	int height = face->size->metrics.height / 64;
 	int width = 0;
 	// doing width measuring just based shaper glyphs advances is not good assumption either
 	for (int i = 0; i < glyphCount; ++i) { width += glyphPositions[i].x_advance; }
 	width /= 64;
 	unsigned char* image = (unsigned char*)calloc(width * height, sizeof(char));
 	FT_GlyphSlot slot = face->glyph;
-	int x = 0, y = face->max_advance_height / 64 - 2;
+	int x = 0, y = face->size->metrics.ascender / 64;
 	for (int i = 0; i < glyphCount; ++i) {
 		FT_Load_Glyph(face, glyphInfos[i].codepoint, FT_LOAD_DEFAULT);
 		FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL);
