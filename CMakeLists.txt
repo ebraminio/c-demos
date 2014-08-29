@@ -27,13 +27,13 @@ include_directories(glew/include glew/src)
 
 # Ours
 ## tut0
-add_executable(tut0 tut0.c)
+add_executable(tut0 tut0.cc)
 target_link_libraries(tut0 glfw ${GLFW_LIBRARIES})
 
 ## tut1
-add_executable(tut1 tut1.c)
+add_executable(tut1 tut1.cc)
 target_link_libraries(tut1 harfbuzz freetype)
 
 ## tut2
-add_executable(tut2 tut2.c)
+add_executable(tut2 tut2.cc)
 target_link_libraries(tut2 glfw ${GLFW_LIBRARIES} libglew_static)
