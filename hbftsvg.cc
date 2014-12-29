@@ -29,13 +29,13 @@ int main() {
   FT_Face face;
   FT_New_Face(library,
     // Just for sake of simplicity
-#if true
+#if 0
     "IranNastaliq.ttf",
 #else
   #if defined(__linux__)
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
   #elif defined(_WIN32) || defined(_WIN64)
-    "C:\\Windows\\Fonts\\IranNastaliq.ttf",
+    "C:\\Windows\\Fonts\\tahoma.ttf",
   #elif __APPLE__
     "/Library/Fonts/Tahoma.ttf",
   #endif
@@ -43,8 +43,11 @@ int main() {
     0,
     &face);
 
-  FT_Set_Char_Size(face, 0, face->units_per_EM, 72, 72);
-  hb_font_t *font = hb_ft_font_create(face, NULL);
+  hb_face_t *hb_face = hb_ft_face_create(face, NULL);
+  hb_font_t *font = hb_font_create(hb_face);
+  unsigned int upem = hb_face_get_upem(hb_face);
+  hb_font_set_scale(font, upem, upem);
+  hb_ft_font_set_funcs(font);
 
   hb_buffer_t *buf = hb_buffer_create();
   hb_buffer_set_direction(buf, HB_DIRECTION_RTL);
@@ -60,10 +63,10 @@ int main() {
   hb_glyph_position_t *glyphPositions = hb_buffer_get_glyph_positions(buf, &glyphCount);
 
   // this is not a good assumption specially when there is GPOS on the font
-  int height = face->size->metrics.height;
+  int height = face->height;
   int width = 0;
   for (int i = 0; i < glyphCount; ++i) { width += glyphPositions[i].x_advance; }
-  int x = 0, y = face->size->metrics.ascender;
+  int x = 0, y = face->ascender;
 
   std::ofstream file("1.svg");
   file << "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 " << width << " " << height << "\" height=\"700\">";
@@ -82,17 +85,17 @@ int main() {
 
     FT_Vector_ *ftpoints = ftoutline.points;
 
-    // TODO: Instead do_outline, use FT_Outline_Decompose based approach instead
-#if true
+    // TODO: Instead do_outline, use FT_Outline_Decompose based approach
+#if 0
     for (int j = 0; j < ftoutline.n_points; j++) {
       ftpoints[j].y *= -1;
       ftpoints[j].x += s;
       ftpoints[j].y += t;
     }
-    file << do_outline(ftpoints, ftoutline, ftoutline.tags, ftoutline.contours);
+    file << do_outline(ftpoints, ftoutline, ftoutline.tags, ftoutline.contours).c_str();
 #else
     file << "<g transform=\"translate(" << s << ", " << t << ") scale(1, -1)\">";
-    file << do_outline(ftpoints, ftoutline, ftoutline.tags, ftoutline.contours);
+    file << do_outline(ftpoints, ftoutline, ftoutline.tags, ftoutline.contours).c_str();
     file << "</g>";
 #endif
 

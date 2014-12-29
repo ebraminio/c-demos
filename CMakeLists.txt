@@ -37,3 +37,7 @@ target_link_libraries(tut1 harfbuzz freetype)
 ## tut2
 add_executable(tut2 tut2.cc)
 target_link_libraries(tut2 glfw ${GLFW_LIBRARIES} libglew_static)
+
+## hbftsvg
+add_executable(hbftsvg hbftsvg.cc)
+target_link_libraries(hbftsvg harfbuzz freetype)
