@@ -5,6 +5,11 @@
 #include <hb.h>
 #include <hb-ft.h>
 
+#ifdef PNG_OUTPUT
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+#endif
+
 #define FONT_SIZE 36
 #define MARGIN (FONT_SIZE * .5)
 
@@ -120,11 +125,15 @@ main(int argc, char **argv)
     y -= positions[i].y_advance / 64.;
   }
 
+#ifndef PNG_OUTPUT
   // Save as pbm file, Inkscape Libre/OpenOffice Draw can open it
   FILE *f = fopen ("out.pbm", "wb");
   fprintf (f, "P5 %d %d %d\n", width, height, slot->bitmap.num_grays - 1);
   fwrite ((const char *)image, sizeof (char), width * height, f);
   fclose (f);
+#else
+  stbi_write_png("out.png", width, height, 1, image, 0);
+#endif
   
   free (image);
 

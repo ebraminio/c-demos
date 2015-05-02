@@ -39,6 +39,7 @@ add_executable(tut2 tut2.cc)
 target_link_libraries(tut2 glfw ${GLFW_LIBRARIES} libglew_static)
 
 ## hello-harfbuzz
+add_definitions(-DPNG_OUTPUT)
 add_executable(hello-harfbuzz hello-harfbuzz.cc)
 target_link_libraries(hello-harfbuzz harfbuzz freetype)
 
