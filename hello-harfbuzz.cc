@@ -8,22 +8,6 @@
 #define FONT_SIZE 36
 #define MARGIN (FONT_SIZE * .5)
 
-// Simple pixel copy, copyedited from http://www.freetype.org/freetype2/docs/tutorial/example1.c
-void
-draw_bitmap(FT_Bitmap *bitmap, FT_Int x, FT_Int y, unsigned char *image, int width, int height) {
-  FT_Int i, j, p, q;
-  FT_Int x_max = x + bitmap->width;
-  FT_Int y_max = y + bitmap->rows;
-
-  for (i = x, p = 0; i < x_max; i++, p++) {
-    for (j = y, q = 0; j < y_max; j++, q++) {
-      if (i < 0 || j < 0 || i >= width || j >= height)
-        continue;
-      image[j * width + i] |= bitmap->buffer[q * bitmap->width + p];
-    }
-  }
-}
-
 int
 main(int argc, char **argv)
 {
@@ -88,8 +72,8 @@ main(int argc, char **argv)
   }
 
   /* Draw */
-  double width = 2 * MARGIN;
-  double height = 2 * MARGIN;
+  int width = 2 * MARGIN;
+  int height = 2 * MARGIN;
   for (unsigned int i = 0; i < len; i++)
   {
     width += positions[i].x_advance / 64.;
@@ -100,7 +84,8 @@ main(int argc, char **argv)
   else
     width += FONT_SIZE;
 
-  unsigned char *image = (unsigned char*)calloc (width * height, sizeof (char));
+  int image_len = width * height;
+  unsigned char *image = (unsigned char*)calloc (image_len, sizeof (char));
 
   FT_GlyphSlot slot = ft_face->glyph;
 
@@ -116,18 +101,28 @@ main(int argc, char **argv)
     FT_Load_Glyph (ft_face, infos[i].codepoint, FT_LOAD_DEFAULT);
     FT_Render_Glyph (slot, FT_RENDER_MODE_NORMAL);
 
-    draw_bitmap (&slot->bitmap,
-      x + (positions[i].x_offset / 64) + slot->bitmap_left,
-      y - (positions[i].y_offset / 64) - slot->bitmap_top,
-      image, width, height);
+    const int src_x = x + (positions[i].x_offset / 64.) + slot->bitmap_left;
+    const int src_y = y - (positions[i].y_offset / 64.) - slot->bitmap_top;
+    int dst_index = src_y * width + src_x;
+    int src_index = 0;
+    for (int row = 0; row < slot->bitmap.rows; ++row)
+    {
+      for (int index = 0; index < slot->bitmap.width; ++index, ++dst_index, ++src_index)
+      {
+        if (dst_index >= image_len || dst_index < 0)
+          continue;
+        image[dst_index] |= slot->bitmap.buffer[src_index];
+      }
+      dst_index += width - slot->bitmap.width;
+    }
 
-    x += positions[i].x_advance / 64;
-    y -= positions[i].y_advance / 64;
+    x += positions[i].x_advance / 64.;
+    y -= positions[i].y_advance / 64.;
   }
 
   // Save as pbm file, Inkscape Libre/OpenOffice Draw can open it
   FILE *f = fopen ("out.pbm", "wb");
-  fprintf (f, "P5 %d %d %d\n", (int)width, (int)height, slot->bitmap.num_grays - 1);
+  fprintf (f, "P5 %d %d %d\n", width, height, slot->bitmap.num_grays - 1);
   fwrite ((const char *)image, sizeof (char), width * height, f);
   fclose (f);
   
