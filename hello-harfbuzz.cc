@@ -108,18 +108,15 @@ main(int argc, char **argv)
 
     const int src_x = x + (positions[i].x_offset / 64.) + slot->bitmap_left;
     const int src_y = y - (positions[i].y_offset / 64.) - slot->bitmap_top;
+    const int src_height = slot->bitmap.rows;
+    const int src_width = slot->bitmap.width;
+    const int width_diff = width - src_width;
     int dst_index = src_y * width + src_x;
     int src_index = 0;
-    for (int row = 0; row < slot->bitmap.rows; ++row)
-    {
-      for (int index = 0; index < slot->bitmap.width; ++index, ++dst_index, ++src_index)
-      {
-        if (dst_index >= image_len || dst_index < 0)
-          continue;
-        image[dst_index] |= slot->bitmap.buffer[src_index];
-      }
-      dst_index += width - slot->bitmap.width;
-    }
+    for (int row = 0; row < src_height; dst_index += width_diff, ++row)
+      for (int index = 0; index < src_width; ++index, ++dst_index, ++src_index)
+        if (dst_index < image_len && dst_index > 0)
+          image[dst_index] |= slot->bitmap.buffer[src_index];
 
     x += positions[i].x_advance / 64.;
     y -= positions[i].y_advance / 64.;
@@ -132,7 +129,7 @@ main(int argc, char **argv)
   fwrite ((const char *)image, sizeof (char), width * height, f);
   fclose (f);
 #else
-  stbi_write_png("out.png", width, height, 1, image, 0);
+  stbi_write_png ("out.png", width, height, 1, image, 0);
 #endif
   
   free (image);
