@@ -1,3 +1,4 @@
+#based on https://github.com/pkoshevoy/harfbuzz/blob/cmake-port/msvcport/CMakeLists.txt
 cmake_minimum_required(VERSION 2.8.0)
 #project(harfbuzz)
 
