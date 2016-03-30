@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 2.8.0)
 option(HB_INSTALL "Generate installation target" ON)
 option(HB_HAVE_FREETYPE "Use FreeType" OFF)
 option(HB_HAVE_UNISCRIBE "Uniscribe shaper" OFF)
+option(HB_HAVE_DIRECWRITE "DirectWrite shaper" OFF)
 option(HB_HAVE_CORETEXT "Enable CoreText shaper on Mac" ON)
 option(HB_BUILTIN_UCDN "Use HarfBuzz provided UCDN" ON)
 
@@ -239,6 +240,16 @@ if (WIN32 AND HB_HAVE_UNISCRIBE)
   set(project_sources ${project_sources} harfbuzz/src/hb-uniscribe.cc)
 
   set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} usp10 gdi32 rpcrt4)
+endif ()
+
+if (WIN32 AND HB_HAVE_DIRECTWRITE)
+  add_definitions(-DHAVE_DIRECTWRITE)
+
+  set(project_headers ${project_headers} harfbuzz/src/hb-directwrite.h)
+
+  set(project_sources ${project_sources} harfbuzz/src/hb-directwrite.cc)
+
+  set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} dwrite rpcrt4)
 endif ()
 
 set(project_sources ${project_sources} ${project_headers})
