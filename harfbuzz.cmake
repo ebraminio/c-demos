@@ -44,7 +44,7 @@ ragel_preproc(harfbuzz/src hb-buffer-deserialize-json .hh)
 ragel_preproc(harfbuzz/src hb-buffer-deserialize-text .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-indic-machine .hh)
 ragel_preproc(harfbuzz/src hb-ot-shape-complex-myanmar-machine .hh)
-ragel_preproc(harfbuzz/src hb-ot-shape-complex-sea-machine .hh)
+ragel_preproc(harfbuzz/src hb-ot-shape-complex-use-machine .hh)
 ##
 
 ## Make hb-version.h
@@ -74,7 +74,7 @@ set(project_sources
   ${CMAKE_CURRENT_BINARY_DIR}/hb-buffer-deserialize-text.hh
   ${CMAKE_CURRENT_BINARY_DIR}/hb-ot-shape-complex-indic-machine.hh
   ${CMAKE_CURRENT_BINARY_DIR}/hb-ot-shape-complex-myanmar-machine.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hb-ot-shape-complex-sea-machine.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hb-ot-shape-complex-use-machine.hh
   )
 
 set(project_headers
@@ -147,7 +147,8 @@ set(project_sources
   harfbuzz/src/hb-ot-shape-complex-indic.cc
   harfbuzz/src/hb-ot-shape-complex-indic-table.cc
   harfbuzz/src/hb-ot-shape-complex-myanmar.cc
-  harfbuzz/src/hb-ot-shape-complex-sea.cc
+  harfbuzz/src/hb-ot-shape-complex-use.cc
+  harfbuzz/src/hb-ot-shape-complex-use-table.cc
   harfbuzz/src/hb-ot-shape-complex-thai.cc
   harfbuzz/src/hb-ot-shape-complex-tibetan.cc
   harfbuzz/src/hb-ot-shape-fallback.cc
@@ -202,7 +203,7 @@ endif ()
 if (HB_BUILTIN_UCDN)
   include_directories(harfbuzz/src/hb-ucdn)
   add_definitions(-DHAVE_UCDN)
-  
+
   set(project_headers ${project_headers} harfbuzz/src/hb-ucdn/ucdn.h)
 
   set(project_sources
