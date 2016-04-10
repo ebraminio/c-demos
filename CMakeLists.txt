@@ -38,6 +38,14 @@ target_link_libraries(tut1 harfbuzz freetype)
 add_executable(tut2 tut2.cc)
 target_link_libraries(tut2 glfw ${GLFW_LIBRARIES} libglew_static)
 
+## tut3
+add_executable(tut3 tut3.cc)
+target_link_libraries(tut3 glfw ${GLFW_LIBRARIES} libglew_static)
+
+## tut4
+add_executable(tut4 tut4.cc)
+target_link_libraries(tut4 harfbuzz freetype)
+
 ## hbftsvg
 add_executable(hbftsvg hbftsvg.cc)
 target_link_libraries(hbftsvg harfbuzz freetype)
@@ -50,4 +58,3 @@ target_link_libraries(hello-harfbuzz harfbuzz freetype)
 ## hello-harfbuzz-gl
 add_executable(hello-harfbuzz-gl hello-harfbuzz-gl.cc)
 target_link_libraries(hello-harfbuzz-gl harfbuzz freetype glfw ${GLFW_LIBRARIES} libglew_static)
-
