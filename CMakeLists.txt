@@ -16,6 +16,8 @@ include_directories(freetype2/include)
 ## harfbuzz
 set(HB_INSTALL OFF CACHE STRING "" FORCE)
 set(HB_HAVE_FREETYPE ON CACHE STRING "" FORCE)
+set(HB_HAVE_DIRECTWRITE ON CACHE STRING "" FORCE)
+set(HB_HAVE_UNISCRIBE ON CACHE STRING "" FORCE)
 include(harfbuzz.cmake)
 include_directories(harfbuzz/src)
 

@@ -8,5 +8,5 @@ for %%f in (freetype2 glfw glew harfbuzz) do git -c %%f pull
 rmdir /s /q build 2>NUL
 mkdir build
 cd build
-cmake -G "Visual Studio 14" ../
+cmake -DWITH_ZLIB=OFF -DWITH_PNG=OFF -DWITH_BZIP2=OFF -G "Visual Studio 14" ../
 cd..

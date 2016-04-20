@@ -106,6 +106,7 @@ set(project_sources
   harfbuzz/src/hb-common.cc
   harfbuzz/src/hb-face.cc
   harfbuzz/src/hb-font.cc
+  harfbuzz/src/hb-ot-font.cc
   harfbuzz/src/hb-ot-tag.cc
   harfbuzz/src/hb-set.cc
   harfbuzz/src/hb-shape.cc
@@ -128,6 +129,7 @@ set(project_sources
   harfbuzz/src/hb-ot-hmtx-table.hh
   harfbuzz/src/hb-ot-maxp-table.hh
   harfbuzz/src/hb-ot-name-table.hh
+  harfbuzz/src/hb-ot-os2-table.hh
   harfbuzz/src/hb-private.hh
   harfbuzz/src/hb-set-private.hh
   harfbuzz/src/hb-shape-plan-private.hh
