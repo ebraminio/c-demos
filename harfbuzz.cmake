@@ -223,9 +223,9 @@ if (APPLE AND HB_HAVE_CORETEXT)
   # Apple Advanced Typography
   add_definitions(-DHAVE_CORETEXT)
 
-  set(project_sources
-    ${project_sources}
-    harfbuzz/src/hb-coretext.cc)
+  set(project_headers ${project_headers} harfbuzz/src/hb-coretext.h)
+
+  set(project_sources ${project_sources} harfbuzz/src/hb-coretext.cc)
 
   find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
   mark_as_advanced(APPLICATION_SERVICES_FRAMEWORK)
