@@ -16,11 +16,20 @@ int main(int argc, char* argv[]) {
 
   if (argc < 3) {
     fprintf(stderr, "usage: hello-harfbuzz font-file.ttf text\n");
-    exit(1);
-  }
 
-  fontfile = argv[1];
-  text = argv[2];
+    fontfile = 
+#if defined(__linux__)
+		"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+#elif defined(_WIN32) || defined(_WIN64)
+		"C:\\Windows\\Fonts\\tahoma.ttf";
+#elif __APPLE__
+		"/Library/Fonts/Tahoma.ttf";
+#endif
+    text = "متن متن";
+  } else {
+    fontfile = argv[1];
+    text = argv[2];
+  }
   
   /* Initialize FreeType and create FreeType font face. */
   FT_Library ft_library;

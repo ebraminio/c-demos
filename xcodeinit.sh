@@ -13,7 +13,6 @@ for f in freetype2 glfw glew harfbuzz; do cd $f; git pull; cd ..; done
 rm -rf build
 mkdir build
 cd build
-cmake -G "Unix Makefiles" ../
-make
+cmake -G Xcode ../
+open glcourse.xcodeproj
 cd ..
-code . || true
