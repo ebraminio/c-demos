@@ -14,6 +14,7 @@ add_subdirectory(freetype2)
 include_directories(freetype2/include)
 
 ## harfbuzz
+set(ENV{FREETYPE_DIR} "${PROJECT_SOURCE_DIR}/freetype2")
 set(HB_HAVE_FREETYPE ON CACHE STRING "" FORCE)
 set(HB_HAVE_DIRECTWRITE ON CACHE STRING "" FORCE)
 set(HB_HAVE_UNISCRIBE ON CACHE STRING "" FORCE)
