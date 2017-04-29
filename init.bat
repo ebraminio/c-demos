@@ -5,9 +5,4 @@ if not exist glew git clone --depth=1 https://github.com/omniavinco/glew-cmake g
 if not exist harfbuzz git clone --depth=1 https://github.com/behdad/harfbuzz
 for %%f in (freetype2 glfw glew harfbuzz) do cd %%f & git pull & cd ..
 
-rmdir /s /q build 2>NUL
-mkdir build
-cd build
-cmake -DWITH_ZLIB=OFF -DWITH_PNG=OFF -DWITH_BZIP2=OFF -G "Visual Studio 14" ../
-start glcourse.sln
-cd..
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.com" .
