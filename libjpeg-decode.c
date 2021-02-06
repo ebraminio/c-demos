@@ -43,6 +43,7 @@ int main() {
   }
   unsigned width, height;
   uint8_t *image = decode(buf, len, &width, &height);
+  free(buf);
   {
     FILE *f = fopen("out.pbm", "wb");
     fprintf(f, "P6 %d %d 255\n", width, height);

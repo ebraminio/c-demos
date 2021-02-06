@@ -1,7 +1,8 @@
 // gcc librsvg-render.c `pkg-config --libs --cflags librsvg-2.0` -Wall && ./a.out
-#include <librsvg/rsvg.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <librsvg/rsvg.h>
 
 int main() {
   uint8_t *buf;
@@ -18,6 +19,7 @@ int main() {
 
   GError *error = NULL;
   RsvgHandle *handle = rsvg_handle_new_from_data(buf, len, &error);
+  free(buf);
   if (error)
     return 1;
   RsvgDimensionData dim;
@@ -30,4 +32,5 @@ int main() {
   cairo_destroy(cr);
   cairo_surface_write_to_png(cairo_surface, "out.png");
   cairo_surface_destroy(cairo_surface);
+  return 0;
 }

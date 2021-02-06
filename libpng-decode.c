@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
   unsigned width, height;
   int color_type;
   uint8_t *image = decode(buf, len, &width, &height, &color_type);
+  free(buf);
 
   if (color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
     printf("Only RGBA types are supported for the rest of the example for now");

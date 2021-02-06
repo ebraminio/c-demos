@@ -19,6 +19,7 @@ int main() {
   unsigned dst_size = ZSTD_getFrameContentSize(src, src_size);
   uint8_t *dst = malloc(dst_size);
   ZSTD_decompress(dst, dst_size, src, src_size);
+  free(src);
   printf("%.*s", dst_size, dst);
   free(dst);
   return 0;

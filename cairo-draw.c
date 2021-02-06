@@ -16,7 +16,6 @@ int main() {
   cairo_stroke(cr);
 
   cairo_destroy(cr);
-
   cairo_surface_write_to_png(cairo_surface, "out.png");
   cairo_surface_destroy(cairo_surface);
 }

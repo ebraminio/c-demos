@@ -6,6 +6,8 @@
 
 int main() {
   hb_blob_t *blob = hb_blob_create_from_file("input/Roboto.abc.ttf");
+  // or read the file yourself into buf and use,
+  //   hb_blob_create(buf, len, HB_MEMORY_MODE_WRITABLE, buf, free);
   hb_face_t *face = hb_face_create(blob, 0);
   hb_blob_destroy(blob);
   hb_font_t *font = hb_font_create(face);
@@ -17,7 +19,7 @@ int main() {
   hb_buffer_t *buffer = hb_buffer_create();
   hb_buffer_add_utf8(buffer, "abc", -1, 0, -1);
   hb_buffer_guess_segment_properties(buffer);
-  // or these instead instead guess:
+  // or use these instead guess:
   //   hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);
   //   hb_buffer_set_script(buffer, HB_SCRIPT_LATIN);
   hb_shape(font, buffer, NULL, 0);
