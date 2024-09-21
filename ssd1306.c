@@ -106,7 +106,7 @@ int main() {
 
   writeBuffer(deviceNode, ssd1306_128x32_init_seq, sizeof(ssd1306_128x32_init_seq));
 
-  uint8_t buffer[513] = {0x40};
+  uint8_t buffer[513] = {SETSTARTLINE};
   unsigned tick = 0;
   while (1) {
     ++tick;
