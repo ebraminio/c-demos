@@ -111,7 +111,7 @@ int main() {
     for (unsigned i = 0; i < sizeof(buffer) - 1; ++i) {
       unsigned x = 127 - (i % 128);
       unsigned y = (i / 128) * 8;
-      #define P(j) ((unsigned) !!(data[x / 8 + (y + j) * 16] & (1 << (7 - (x % 8)))) << j)
+      #define P(j) ((unsigned) !!(data[x / 8 + (y + j) * 16] & (1 << (x % 8))) << j)
       buffer[i + 1] = P(0) | P(1) | P(2) | P(3) | P(4) | P(5) | P(6) | P(7);
       #undef P
     }
