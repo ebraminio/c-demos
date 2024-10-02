@@ -106,7 +106,7 @@ int main() {
     memset(data, 0, stride * 32);
     cairo_move_to(cr, 0, 32);
     cairo_show_text(cr, str);
-    debug(data, stride);
+    // debug(data, stride);
 
     for (unsigned i = 0; i < sizeof(buffer) - 1; ++i) {
       unsigned x = 127 - (i % 128);
