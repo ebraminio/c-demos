@@ -1,6 +1,7 @@
-// Linux: cc main.c `pkg-config --cflags --libs openal` && ./a.out
-// macOS: cc main.c -framework OpenAL -DMACOS_BUILTIN_OPENAL && ./a.out
-// web: emcc main.c -lopenal -o index.html
+// Stream some noise using OpenAL
+// Linux: cc openal-stream.c `pkg-config --cflags --libs openal` && ./a.out
+// macOS: cc openal-stream.c -framework OpenAL -DMACOS_BUILTIN_OPENAL && ./a.out
+// web: emcc openal-stream.c -lopenal -o index.html
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,12 +67,13 @@ int main() {
   assert(alIsExtensionPresent("AL_EXT_float32"));
 
   alGenSources(1, &source);
-  #define BUFFERS_COUNT 4
-  ALuint buffers[BUFFERS_COUNT] = {};
-  alGenBuffers(BUFFERS_COUNT, buffers);
-  for (unsigned i = 0; i < BUFFERS_COUNT; ++i) stream_buffer(buffers[i]);
-  alSourceQueueBuffers(source, BUFFERS_COUNT, buffers);
-  #undef BUFFERS_COUNT
+  {
+    enum { BUFFERS_COUNT = 4 };
+    ALuint buffers[BUFFERS_COUNT] = {};
+    alGenBuffers(BUFFERS_COUNT, buffers);
+    for (unsigned i = 0; i < BUFFERS_COUNT; ++i) stream_buffer(buffers[i]);
+    alSourceQueueBuffers(source, BUFFERS_COUNT, buffers);
+  }
   alSourcePlay(source);
 
 #ifdef __EMSCRIPTEN__
