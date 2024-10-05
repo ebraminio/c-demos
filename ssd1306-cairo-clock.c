@@ -75,7 +75,7 @@ static void debug(uint8_t *buffer, unsigned stride) {
   }
 }
 
-int main() {
+int main() {  
   const int deviceNode = open("/dev/i2c-1", O_RDWR);
   const uint8_t addr = 0x3C;
   if (deviceNode < 0 || ioctl(deviceNode, I2C_SLAVE, addr) < 0) {
@@ -109,9 +109,9 @@ int main() {
     // debug(data, stride);
 
     for (unsigned i = 0; i < sizeof(buffer) - 1; ++i) {
-      unsigned x = i % 128;
-      unsigned y = 24 - (i / 128) * 8;
-      #define P(j) ((unsigned) !!(data[x / 8 + (y + 8 - j) * 16] & (1 << (x % 8))) << j)
+      unsigned x = 127 - (i % 128);
+      unsigned y = (i / 128) * 8;
+      #define P(j) ((unsigned) !!(data[x / 8 + (y + j) * 16] & (1 << (x % 8))) << j)
       buffer[i + 1] = P(0) | P(1) | P(2) | P(3) | P(4) | P(5) | P(6) | P(7);
       #undef P
     }
